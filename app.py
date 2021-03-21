@@ -31,7 +31,6 @@ async def main(event):
     r = httpx.post(upload_url, content=video_binary,
                    headers={"content-type": "video/mp4"}
                    )
-    logger.info(f'success: {r.text}')
     return r.status_code == 200
 
 
@@ -39,7 +38,6 @@ async def img_downloader(img_urls, queue):
     for img_url in img_urls:
         logger.info(f"Downloading {img_url}")
         r = httpx.get(img_url)
-        logger.info(f"hello {r}")
 
         image = Image.open(io.BytesIO(r.content))
         await queue.put(image)
@@ -52,7 +50,7 @@ async def make_video(queue):
         output = av.open(buffer, 'w', format='mp4', options={'crf': '18'})
         stream = output.add_stream('h264', 24)
         while True:
-            logger.info(f"waiting for img")
+            logger.info(f"Waiting for img")
             item = await queue.get()
             if item is None:
                 logger.info(f"Done!")
@@ -65,4 +63,3 @@ async def make_video(queue):
         output.mux(packet)
 
         return buffer.read()
-    # stream = output.add_stream('h264', '23.976')
