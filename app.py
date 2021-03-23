@@ -57,7 +57,6 @@ async def make_video(images):
     finished = 0
     async for img in img_downloader(images):
         img = await img
-        print(img)
         frame = av.VideoFrame.from_image(img)
         packet = stream.encode(frame)
         output.mux(packet)
